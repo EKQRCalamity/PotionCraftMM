@@ -19,19 +19,23 @@ namespace Potions
     internal class Logger : MonoBehaviour
     {
         internal static bool isAlloc = false;
+
         [DllImport("kernel32.dll",
             EntryPoint = "GetStdHandle",
             SetLastError = true,
             CharSet = CharSet.Auto,
             CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetStdHandle(int nStdHandle);
+        
         [DllImport("kernel32.dll",
             EntryPoint = "AllocConsole",
             SetLastError = true,
             CharSet = CharSet.Auto,
             CallingConvention = CallingConvention.StdCall)]
         private static extern int AllocConsole();
+        
         private const int STD_OUTPUT_HANDLE = -11;
+        
         void OnEnable() { Application.logMessageReceived += LogF; }
         void OnDisable() { Application.logMessageReceived -= LogF; }
 
@@ -39,6 +43,28 @@ namespace Potions
         {
             if (isAlloc)
             {
+                switch (type) {
+                    case UnityEngine.LogType.Error:
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        condition = $"[Unity Error] - {condition}";
+                        break;
+                    case UnityEngine.LogType.Assert:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        condition = $"[Unity Assert] - {condition}";
+                        break;
+                    case UnityEngine.LogType.Warning:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        condition = $"[Unity Warning] - {condition}";
+                        break;
+                    case UnityEngine.LogType.Log:
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        condition = $"[Unity Log] - {condition}";
+                        break;
+                    case UnityEngine.LogType.Exception:
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        condition = $"[Unity Exception] - {condition}";
+                        break;
+                }
                 Console.WriteLine(condition);
             }
         }
